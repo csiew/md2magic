@@ -4,7 +4,7 @@
 ### Directory structure
 Specific files are necessary to use md2magic effectively. Firstly, each site would have its own directory. Secondly, each site directory would have a file called 'config.pref' and a 'components' directory.
 
-#####Before output
+##### Before output
     [md2magic]
        |--- md2magic.py
        |--- [sample_site]
@@ -16,7 +16,7 @@ Specific files are necessary to use md2magic effectively. Firstly, each site wou
                        |--- header.md
                        |--- footer.md
                        
-#####After output
+##### After output
     [md2magic]
        |--- md2magic.py
        |--- [sample_site]
