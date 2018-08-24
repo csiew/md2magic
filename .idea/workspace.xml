@@ -45,14 +45,14 @@
           <entry key="Python Console" value="240" />
           <entry key="config" value="134" />
           <entry key="css" value="292" />
-          <entry key="md" value="1062" />
+          <entry key="md" value="1065" />
           <entry key="py" value="5094" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CSS" value="292" />
-          <entry key="Markdown" value="1062" />
+          <entry key="Markdown" value="1065" />
           <entry key="PLAIN_TEXT" value="134" />
           <entry key="Python" value="5334" />
         </counts>
@@ -80,8 +80,8 @@
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="210">
-                <caret line="9" column="31" selection-start-line="9" selection-start-column="31" selection-end-line="9" selection-end-column="31" />
+              <first_editor relative-caret-position="315">
+                <caret line="16" column="4" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="4" />
               </first_editor>
               <second_editor />
             </state>
@@ -360,8 +360,8 @@
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="210">
-            <caret line="9" column="31" selection-start-line="9" selection-start-column="31" selection-end-line="9" selection-end-column="31" />
+          <first_editor relative-caret-position="315">
+            <caret line="16" column="4" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="4" />
           </first_editor>
           <second_editor />
         </state>
