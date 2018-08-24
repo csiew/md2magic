@@ -1,0 +1,23 @@
+body {
+    max-width: 600px;
+    margin: auto;
+    padding: 1em;
+    padding-top: 3em;
+    padding-bottom: 3em;
+    font-family: sans-serif;
+    font-size: 1em;
+    line-height: 1.25;
+    background: whitesmoke;
+}
+
+header {
+    margin-bottom: 3em;
+    padding: 1em;
+    background: yellow;
+}
+
+footer {
+    margin-top: 3em;
+    padding: 1em;
+    background: cyan;
+}
