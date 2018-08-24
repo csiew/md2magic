@@ -1,4 +1,4 @@
 title: "Hello world"
 style_src: "main.css"
-header_src: "sample/components/header.md"
-footer_src: "sample/components/footer.md"
+header_src: "components/header.md"
+footer_src: "components/footer.md"

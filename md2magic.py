@@ -95,7 +95,8 @@ class md2magic:
         config_header = ""
         if self.config_options['header_src'] and (self.config_options['header_src'])[-3:] == ".md":
             try:
-                header_fp = open(self.config_options['header_src'], "r")
+                # Get header from components dir, same dir context as config file
+                header_fp = open(str((sys.argv[2])[:-6] + self.config_options['header_src']), "r")
                 content = self.markdowner.convert(header_fp.read())
                 header_fp.close()
                 if len(content) > 0:
@@ -107,7 +108,8 @@ class md2magic:
         config_footer = ""
         if self.config_options['footer_src'] and (self.config_options['footer_src'])[-3:] == ".md":
             try:
-                header_fp = open(self.config_options['footer_src'], "r")
+                # Get footer from components dir, same dir context as config file
+                header_fp = open(str((sys.argv[2])[:-6] + self.config_options['footer_src']), "r")
                 content = self.markdowner.convert(header_fp.read())
                 header_fp.close()
                 if len(content) > 0:
