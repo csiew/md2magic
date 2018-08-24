@@ -1,17 +1,19 @@
-import os, sys
+import sys, re
 from markdown2 import MarkdownWithExtras
 
 
 class md2magic:
     valid_params = True
 
+    # File paths
     source = ""
     destination = ""
     config = ""
 
-    source_fp = 0
-    destination_fp = 0
+    # Options
+    config_options = {}
 
+    # Markdown service
     markdowner = MarkdownWithExtras(extras=["tables", "wiki-tables"])
 
     def __init__(self):
@@ -22,10 +24,7 @@ class md2magic:
                 self.destination = sys.argv[2]
             elif (sys.argv[2])[-6:] == "config":    # Translation with styling
                 self.config = sys.argv[2]
-        # elif len(sys.argv) == 2:
-        #     if (sys.argv[1])[-3:] == ".md":
-        #         self.source = sys.argv[1]
-        #         self.destination = (sys.argv[1])[:-3] + ".html"
+                self.destination = (sys.argv[1])[:-3] + ".html"
         else:
             print("md2magic needs 2 parameters:\n\n\tmd2magic [source].md [path/]config\n")
             self.valid_params = False
@@ -34,23 +33,89 @@ class md2magic:
         print("Source      --> " + self.source)
         print("Destination --> " + self.destination)
 
-        self.source_fp = open(self.source, "r")
+        self.get_config()
+
+        source_fp = open(self.source, "r")
         # Assemble HTML file
-        if self.source_fp:
+        if source_fp:
             # Read-in and convert content of markdown
-            tmp_input = self.source_fp.read()
+            tmp_input = source_fp.read()
             tmp_output = self.markdowner.convert(tmp_input)
-            self.source_fp.close()
+            source_fp.close()
 
             # Assemble HTML file
-            html_top = "<html>\n<head>\n<title>Hello World</title>\n</head>\n<body>\n"
+
+            # Get stylesheet if available
+            config_style = ""
+            if self.config_options['style_src'] and (self.config_options['style_src'])[-4:] == ".css":
+                config_style = "<link href='" + self.config_options['style_src'] + "' rel='stylesheet'>\n"
+
+            # Get page title if available
+            config_title = ""
+            if self.config_options['title']:
+                config_title = "<title>" + self.config_options['title'] + "</title>\n"
+
+            config_header = ""
+            config_footer = ""
+            components_dict = self.get_component_content()
+            if len(components_dict['header']) > 0:
+                config_header = components_dict['header']
+            if len(components_dict['footer']) > 0:
+                config_footer = components_dict['footer']
+
+            # Assemble file
+            html_top = "<html>\n<head>\n" + config_style + config_title + "</head>\n<body>\n"
             html_bottom = "</body>\n</html>"
-            html_final = html_top + tmp_output + html_bottom
+            html_final =\
+                html_top +\
+                config_header +\
+                tmp_output +\
+                config_footer +\
+                html_bottom
 
             # Write to output file
-            self.destination_fp = open(self.destination, "w")
-            self.destination_fp.write(html_final)
-            self.destination_fp.close()
+            destination_fp = open(self.destination, "w")
+            destination_fp.write(html_final)
+            destination_fp.close()
+
+    def get_config(self):
+        config_fp = open(self.config, "r")
+        for option in config_fp.readlines():
+            option_param = option.split(': ')
+            if len(option_param) == 2:
+                parsed_value = re.search('"(.*)"\n', option_param[1])
+                self.config_options[option_param[0]] = parsed_value.group(1)
+            else:
+                print("Invalid config option: " + str(option_param))
+        print("Config read complete:")
+        print(self.config_options)
+
+    def get_component_content(self):
+        # Header
+        config_header = ""
+        if self.config_options['header_src'] and (self.config_options['header_src'])[-3:] == ".md":
+            try:
+                header_fp = open(self.config_options['header_src'], "r")
+                content = self.markdowner.convert(header_fp.read())
+                header_fp.close()
+                if len(content) > 0:
+                    config_header = "<header>" + content + "</header>\n"
+            except FileNotFoundError:
+                print("Config error for header_src:\n\t" + self.config_options['header_src'] + " not found!")
+
+        # Footer
+        config_footer = ""
+        if self.config_options['footer_src'] and (self.config_options['footer_src'])[-3:] == ".md":
+            try:
+                header_fp = open(self.config_options['footer_src'], "r")
+                content = self.markdowner.convert(header_fp.read())
+                header_fp.close()
+                if len(content) > 0:
+                    config_footer = "<footer>" + content + "</footer>\n"
+            except FileNotFoundError:
+                print("Config error for footer_src:\n\t" + self.config_options['footer_src'] + " not found!")
+
+        return {'header': config_header, 'footer': config_footer}
 
 
 if __name__ == "__main__":

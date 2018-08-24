@@ -1,0 +1,1 @@
+Results of md2magic test

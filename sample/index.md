@@ -1,5 +1,3 @@
-# Hello world
-
 This is a sample HTML page converted from a Markdown file.
 
 This is a [link to Wikipedia](https://en.wikipedia.org).
