@@ -47,6 +47,7 @@ Specific files are necessary to use md2magic effectively. Firstly, each site wou
 - Generation of headers and footers from a config constructor file (just state metadata and headers + footers generated automatically on build).
 - 'build' and 'diff-build' commands to differentiate doing a full site build vs only building new files/entries.
 - 'init' command to generate project/site directory with config file.
+- Automatically remove output directory if an exception or error occurs.
 
 ### Resources
 - [Markdown syntax guide](https://daringfireball.net/projects/markdown/syntax)
