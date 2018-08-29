@@ -1,5 +1,5 @@
 # md2magic
-**md2magic** is a wrapper for [markdown2](https://github.com/trentm/python-markdown2) that allows users to generate websites from markdown files.
+**md2magic** is a wrapper for [markdown2](https://github.com/trentm/python-markdown2) that allows users to generate websites from markdown files. It also supports generic HTML files for headers, footers, and content rather than markdown files. The distinction in their file types are automatically detected.
 
 ### Usage
 Instructions to create a basic website:
