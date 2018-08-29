@@ -42,6 +42,11 @@ Specific files are necessary to use md2magic effectively. Firstly, each site wou
                        |--- index.html
                        |--- about.html
 
+### TODO
+- Add recursive directory iteration (e.g. not just files in directory 'blog', but 'blog/posts' too).
+- Generation of headers and footers from a config constructor file (just state metadata and headers + footers generated automatically on build).
+- 'build' and 'diff-build' commands to differentiate doing a full site build vs only building new files/entries.
+
 ### Resources
 - [Markdown syntax guide](https://daringfireball.net/projects/markdown/syntax)
 - [markdown2](https://github.com/trentm/python-markdown2)
