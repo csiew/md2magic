@@ -1,0 +1,20 @@
+<div ng-app="myApp" ng-controller="myCtrl" ng-int="myCol='beige'" style="background:{{myCol}}">
+    <h1 id="greeting">Hi {{firstName + " " + lastName}}!</h1>
+    <p>
+        First Name: <input type="text" ng-model="firstName"><br>
+        Last Name: <input type="text" ng-model="lastName"><br>
+        <br>
+        Full Name: {{firstName + " " + lastName}}
+    </p>
+    <p>
+        <input ng-model="myCol">
+    </p>
+</div>
+
+<script>
+    var app = angular.module('myApp', []);
+    app.controller('myCtrl', function($scope) {
+        $scope.firstName= "John";
+        $scope.lastName= "Doe";
+    });
+</script>

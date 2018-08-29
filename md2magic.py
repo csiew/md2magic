@@ -48,11 +48,15 @@ class md2magic:
             # Convert individual files
             for file in os.listdir(directory):
                 filename = os.fsdecode(file)
-                if filename.endswith(".md"):
+                if filename.endswith(".md") or filename.endswith(".html"):
                     print(" - " + filename + " [" + os.path.abspath(self.source + "/" + filename) + "]")
                     source_path = os.path.abspath(self.source + "/" + filename)
-                    output_path = (os.path.abspath(self.source + "/out/" + filename))[:-3] + ".html"
-                    self.file_conversion(source_path, output_path)
+                    if filename.endswith(".md"):
+                        output_path = (os.path.abspath(self.source + "/out/" + filename))[:-3] + ".html"
+                        self.file_conversion("md", source_path, output_path)
+                    elif filename.endswith(".html"):
+                        output_path = (os.path.abspath(self.source + "/out/" + filename))[:-5] + ".html"
+                        self.file_conversion("html", source_path, output_path)
             # Make copy of CSS
             style_path = os.path.abspath(self.source + "/" + self.config_options['style_src'])
             style_out_path = os.path.abspath(self.source + "/out/" + self.config_options['style_src'])
@@ -66,52 +70,69 @@ class md2magic:
         except FileNotFoundError:
             print("Can not access site directory at: " + self.source)
 
-    def file_conversion(self, source_path, output_path):
+    def file_conversion(self, filetype, source_path, output_path):
         print("Source      --> " + source_path)
         print("Destination --> " + output_path)
 
         source_fp = open(source_path, "r")
         # Assemble HTML file
         if source_fp:
-            # Read-in and convert content of markdown
-            tmp_input = source_fp.read()
-            tmp_output = self.markdowner.convert(tmp_input)
+            if filetype == "md":
+                # Read-in and convert content of markdown
+                tmp_input = source_fp.read()
+                tmp_output = self.markdowner.convert(tmp_input)
+            elif filetype == "html":
+                tmp_output = source_fp.read()
             source_fp.close()
 
             # Assemble HTML file
+            self.assemble_file(tmp_output, source_path, output_path)
+        
+    def assemble_file(self, content, source_path, output_path):
+        # Get stylesheet if available
+        config_style = ""
+        if self.config_options['style_src'] and (self.config_options['style_src'])[-4:] == ".css":
+            config_style = "<link href='" + self.config_options['style_src'] + "' rel='stylesheet'>\n"
 
-            # Get stylesheet if available
-            config_style = ""
-            if self.config_options['style_src'] and (self.config_options['style_src'])[-4:] == ".css":
-                config_style = "<link href='" + self.config_options['style_src'] + "' rel='stylesheet'>\n"
+        # Get page title if available
+        config_title = ""
+        if self.config_options['title']:
+            config_title = "<title>" + self.config_options['title'] + "</title>\n"
 
-            # Get page title if available
-            config_title = ""
-            if self.config_options['title']:
-                config_title = "<title>" + self.config_options['title'] + "</title>\n"
+        config_top = ""
+        config_bottom = ""
+        config_header = ""
+        config_footer = ""
+        components_dict = self.get_component_content()
+        if len(components_dict['top']) > 0:
+            config_header = components_dict['top']
+        if len(components_dict['bottom']) > 0:
+            config_footer = components_dict['bottom']
+        if len(components_dict['header']) > 0:
+            config_header = components_dict['header']
+        if len(components_dict['footer']) > 0:
+            config_footer = components_dict['footer']
 
-            config_header = ""
-            config_footer = ""
-            components_dict = self.get_component_content()
-            if len(components_dict['header']) > 0:
-                config_header = components_dict['header']
-            if len(components_dict['footer']) > 0:
-                config_footer = components_dict['footer']
-
-            # Assemble file
+        # Assemble file
+        if len(config_top) == 0:
             html_top = "<html>\n<head>\n" + config_style + config_title + "</head>\n<body>\n"
+        else:
+            html_top = config_top
+        if len(config_bottom) == 0:
             html_bottom = "</body>\n</html>"
-            html_final =\
-                html_top +\
-                config_header +\
-                tmp_output +\
-                config_footer +\
-                html_bottom
+        else:
+            html_bottom = config_bottom
+        html_final =\
+            html_top +\
+            config_header +\
+            content +\
+            config_footer +\
+            html_bottom
 
-            # Write to output file
-            destination_fp = open(output_path, "w+")
-            destination_fp.write(html_final)
-            destination_fp.close()
+        # Write to output file
+        destination_fp = open(output_path, "w+")
+        destination_fp.write(html_final)
+        destination_fp.close()
 
     def get_config(self):
         self.config = os.path.abspath(self.source + "/config.pref")
@@ -136,14 +157,45 @@ class md2magic:
             return False
 
     def get_component_content(self):
+        # Top
+        config_top = ""
+        if self.config_options['top_src'] and (self.config_options['top_src'])[-5:] == ".html":
+            top_path = os.path.abspath(self.source + "/" + self.config_options['top_src'])
+            try:
+                # Get top from components dir, same dir context as config file
+                top_fp = open(top_path, "r")
+                content = top_fp.read()
+                top_fp.close()
+                if len(content) > 0:
+                    config_top = content + "\n"
+            except FileNotFoundError:
+                print("Config error for top_src: " + self.config_options['top_src'] + " not found at: " + top_path)
+
+        # Bottom
+        config_bottom = ""
+        if self.config_options['bottom_src'] and (self.config_options['bottom_src'])[-5:] == ".html":
+            bottom_path = os.path.abspath(self.source + "/" + self.config_options['bottom_src'])
+            try:
+                # Get top from components dir, same dir context as config file
+                bottom_tp = open(bottom_path, "r")
+                content = bottom_tp.read()
+                bottom_tp.close()
+                if len(content) > 0:
+                    config_bottom = "\n" + content
+            except FileNotFoundError:
+                print("Config error for bottom_src: " + self.config_options['bottom_src'] + " not found at: " + bottom_path)
+
         # Header
         config_header = ""
-        if self.config_options['header_src'] and (self.config_options['header_src'])[-3:] == ".md":
+        if self.config_options['header_src']:
             header_path = os.path.abspath(self.source + "/" + self.config_options['header_src'])
             try:
                 # Get header from components dir, same dir context as config file
                 header_fp = open(header_path, "r")
-                content = self.markdowner.convert(header_fp.read())
+                if (self.config_options['header_src'])[-3:] == ".md":
+                    content = self.markdowner.convert(header_fp.read())
+                elif (self.config_options['header_src'])[-5:] == ".html":
+                    content = header_fp.read()
                 header_fp.close()
                 if len(content) > 0:
                     config_header = "<header>" + content + "</header>\n"
@@ -156,15 +208,18 @@ class md2magic:
             footer_path = os.path.abspath(self.source + "/" + self.config_options['header_src'])
             try:
                 # Get footer from components dir, same dir context as config file
-                header_fp = open(footer_path, "r")
-                content = self.markdowner.convert(header_fp.read())
-                header_fp.close()
+                footer_fp = open(footer_path, "r")
+                if (self.config_options['footer_src'])[-3:] == ".md":
+                    content = self.markdowner.convert(footer_fp.read())
+                elif (self.config_options['footer_src'])[-5:] == ".html":
+                    content = footer_fp.read()
+                footer_fp.close()
                 if len(content) > 0:
                     config_footer = "<footer>" + content + "</footer>\n"
             except FileNotFoundError:
                 print("Config error for footer_src: " + self.config_options['footer_src'] + " not found at: " + footer_path)
 
-        return {'header': config_header, 'footer': config_footer}
+        return {'top': config_top, 'bottom': config_bottom, 'header': config_header, 'footer': config_footer}
 
 
 if __name__ == "__main__":
