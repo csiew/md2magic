@@ -57,6 +57,17 @@ class md2magic:
                     elif filename.endswith(".html"):
                         output_path = (os.path.abspath(self.source + "/out/" + filename))[:-5] + ".html"
                         self.file_conversion("html", source_path, output_path)
+                else:
+                    file_path = os.path.abspath(self.source + "/" + filename)
+                    output_path = os.path.abspath(self.source + "/out/" + filename)
+                    if os.path.exists(file_path) and os.path.isfile(file_path):
+                        source_fp = open(file_path, "r")
+                        output_fp = open(output_path, "w+")
+                        output_fp.write(source_fp.read())
+                        source_fp.close()
+                        output_fp.close()
+                        print("Copied " + filename)
+            """
             # Make copy of CSS
             style_path = os.path.abspath(self.source + "/" + self.config_options['style_src'])
             style_out_path = os.path.abspath(self.source + "/out/" + self.config_options['style_src'])
@@ -67,6 +78,7 @@ class md2magic:
                 style_out_fp.close()
                 style_fp.close()
                 print("Copied CSS: " + self.config_options['style_src'])
+            """
         except FileNotFoundError:
             print("Can not access site directory at: " + self.source)
 
