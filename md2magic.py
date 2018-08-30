@@ -57,7 +57,7 @@ class md2magic:
                     elif filename.endswith(".html"):
                         output_path = (os.path.abspath(self.source + "/out/" + filename))[:-5] + ".html"
                         self.file_conversion("html", source_path, output_path)
-                else:
+                elif not filename.endswith(".pref"):
                     file_path = os.path.abspath(self.source + "/" + filename)
                     output_path = os.path.abspath(self.source + "/out/" + filename)
                     if os.path.exists(file_path) and os.path.isfile(file_path):
@@ -101,16 +101,8 @@ class md2magic:
             self.assemble_file(tmp_output, source_path, output_path)
         
     def assemble_file(self, content, source_path, output_path):
-        # Get stylesheet if available
         config_style = ""
-        if self.config_options['style_src'] and (self.config_options['style_src'])[-4:] == ".css":
-            config_style = "<link href='" + self.config_options['style_src'] + "' rel='stylesheet'>\n"
-
-        # Get page title if available
         config_title = ""
-        if self.config_options['title']:
-            config_title = "<title>" + self.config_options['title'] + "</title>\n"
-
         config_top = ""
         config_bottom = ""
         config_header = ""
@@ -118,6 +110,13 @@ class md2magic:
         components_dict = self.get_component_content()
         if len(components_dict['top']) > 0:
             config_header = components_dict['top']
+        else:
+            # Get stylesheet if available
+            if self.config_options['style_src'] and (self.config_options['style_src'])[-4:] == ".css":
+                config_style = "<link href='" + self.config_options['style_src'] + "' rel='stylesheet'>\n"
+            # Get page title if available
+            if self.config_options['title']:
+                config_title = "<title>" + self.config_options['title'] + "</title>\n"
         if len(components_dict['bottom']) > 0:
             config_footer = components_dict['bottom']
         if len(components_dict['header']) > 0:
