@@ -109,7 +109,7 @@ class md2magic:
         config_footer = ""
         components_dict = self.get_component_content()
         if len(components_dict['top']) > 0:
-            config_header = components_dict['top']
+            config_top = components_dict['top']
         else:
             # Get stylesheet if available
             if self.config_options['style_src'] and (self.config_options['style_src'])[-4:] == ".css":
